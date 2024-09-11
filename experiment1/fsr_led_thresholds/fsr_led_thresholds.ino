@@ -46,45 +46,31 @@ void loop() {
   Serial.print("Sensor 1: ");
   Serial.print(sensorValue1);
   Serial.print(" (Threshold: ");
-  Serial.print(threshold1);
-  Serial.print(") | LED State: ");
-  Serial.println(sensorValue1 > threshold1 ? "ON" : "OFF");
+  Serial.println(threshold1);
+
   
   Serial.print("Sensor 2: ");
   Serial.print(sensorValue2);
   Serial.print(" (Threshold: ");
-  Serial.print(threshold2);
-  Serial.print(") | LED State: ");
-  Serial.println(sensorValue2 > threshold2 ? "ON" : "OFF");
+  Serial.println(threshold2);
+
   
   Serial.print("Sensor 3: ");
   Serial.print(sensorValue3);
   Serial.print(" (Threshold: ");
-  Serial.print(threshold3);
-  Serial.print(") | LED State: ");
-  Serial.println(sensorValue3 > threshold3 ? "ON" : "OFF");
+  Serial.println(threshold3);
+
   
   Serial.print("Sensor 4: ");
   Serial.print(sensorValue4);
   Serial.print(" (Threshold: ");
-  Serial.print(threshold4);
-  Serial.print(") | LED State: ");
-  Serial.println(sensorValue4 > threshold4 ? "ON" : "OFF");
+  Serial.println(threshold4);
+
   
   Serial.print("Sensor 5: ");
   Serial.print(sensorValue5);
   Serial.print(" (Threshold: ");
-  Serial.print(threshold5);
-  Serial.print(") | LED State: ");
-  Serial.println(sensorValue5 > threshold5 ? "ON" : "OFF");
-  
-  Serial.print("Sensor 6: ");
-  Serial.print(sensorValue6);
-  Serial.print(" (Threshold: ");
-  Serial.print(threshold6);
-  Serial.print(") | LED State: ");
-  Serial.println(sensorValue6 > threshold6 ? "ON" : "OFF");
-  
-  Serial.println("--------------------");
+  Serial.println(threshold5);
+
 
 }
