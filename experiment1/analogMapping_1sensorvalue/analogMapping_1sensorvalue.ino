@@ -18,7 +18,7 @@ void setup() {
 }
 
 void loop() {
-  // read light sensor pin and store value in a variable: 
+  // read sensor pin and store value in a variable: 
   sensorValue = analogRead(sensorPin); 
 
   // map sensor value 
@@ -30,7 +30,7 @@ void loop() {
   // print the sensor and mapped sensor values:
   Serial.print("Sensor Value: ");
   Serial.print(sensorValue);
-  Serial.print(", Mapped Light Sensor Value: ");
+  Serial.print(", Mapped Sensor Value: ");
   Serial.println(mappedSensorValue);
 
   // delay between readings:

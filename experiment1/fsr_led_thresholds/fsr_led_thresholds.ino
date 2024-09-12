@@ -7,7 +7,7 @@ For 5 sensors and 5 LEDs.
 When the value of the sensor goes above its threshold value, the corresponding LED lights up.
 */
 
-const int numInputs = 4;
+const int numInputs = 5;
 
 // Analog input pins
 const int analogInputPins[] = { A0, A1, A2, A3, A4 };
@@ -15,7 +15,7 @@ const int analogInputPins[] = { A0, A1, A2, A3, A4 };
 const int ledPins[] = { 2, 3, 4, 5, 6 };
 
 // Individual thresholds for each analog input
-int thresholds[] = { 512, 512, 512, 512, 512 };
+int thresholds[] = { 512, 512, 512, 512, 800 };
 
 // Boolean variables for LED states
 bool ledStates[] = { false, false, false, false, false };
