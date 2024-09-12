@@ -1,11 +1,8 @@
 /*
 Experiment 1: Analog Read Serial 5 Values
 
-DIGF-6037 Creation & Computation
-Taught by Kate Hartman & Nick Puckett
-
-Based on:
- https://www.arduino.cc/en/Tutorial/BuiltInExamples/AnalogReadSerial
+OCADU DIGF-6037 Creation & Computation - taught by Kate Hartman & Nick Puckett
+Based on: https://www.arduino.cc/en/Tutorial/BuiltInExamples/AnalogReadSerial
 
 
 */
