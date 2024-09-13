@@ -12,7 +12,7 @@ This code builds on the basic knightrider setup by mapping the value of a pressu
 // Global variables 
 int sensor_pin = A0;  // Analog input pin for the pressure sensor
 int first_led_pin = 2;  // Digital pin for the first LED
-int min_pressure = 370; // Value with no force applied
+int min_pressure = 0; // Value with no force applied
 int max_pressure = 1023;  // Maximum pressure value (adjust as needed)
 const int num_leds = 6;     // Number of LEDs used for display
 
