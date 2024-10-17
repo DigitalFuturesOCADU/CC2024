@@ -3,7 +3,7 @@ Read a comma separated string over Serial and apply it as the brightness value o
 *each value controls the brightness of 2 LEDs
 Specifically designed for the "KnightRider" setup, but can be adapted
 
-The sketch can be controlled from the website at this address : https://editor.p5js.org/npuckett/full/woaGEUPgU
+The sketch can be controlled from the website at this address : https://editor.p5js.org/npuckett/collections/T5352XtXk
 
 */
 
