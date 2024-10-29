@@ -11,8 +11,8 @@ Hardware Setup:
 1. Connect servos to the following Arduino pins:
    - Servo 1: Pin 2
    - Servo 2: Pin 3
-   - Servo 3: Pin 5
-   - Servo 4: Pin 6
+   - Servo 3: Pin 4
+   - Servo 4: Pin 5
 2. Power your servos appropriately (most servos need external power)
    - DO NOT power multiple servos directly from Arduino's 5V!
    - Use an external power supply or battery pack
@@ -42,7 +42,7 @@ const int maxServos = 4;
 Servo servos[maxServos];  // Array to hold servo objects
 
 // Define constants for servo pin numbers
-const int servoPins[maxServos] = {2, 3, 5, 6};  // Pins for servos 1-4
+const int servoPins[maxServos] = {2, 3, 4, 5};  // Pins for servos 1-4
 
 void setup() {
   // Initialize serial communication at 57600 baud rate
