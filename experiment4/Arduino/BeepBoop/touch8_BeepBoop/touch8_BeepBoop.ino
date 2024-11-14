@@ -1,9 +1,10 @@
 /**
  * CAP1188 Touch Sensor with Buzzer Control
  * 
- * Uses first two capacitive inputs to control a buzzer:
- * Touch 1 - 20ms interval beeping
- * Touch 2 - 3ms interval booping
+ * Interaction
+ * Touch 1 - State 1 - BEEP
+ * Touch 2 - State 2 - BOOP
+ * None    - State 0 - :(
  * 
  * Hardware:
  * - Adafruit CAP1188 capacitive touch sensor
@@ -89,7 +90,7 @@ void buzzerOutput(int state) {
   
   switch(state) {
     case 1:  // Touch 1 active
-      interval = 20;  // 20ms interval
+      interval = 3;  // 3ms interval
       if (currentMillis - previousMillis >= interval) {
         previousMillis = currentMillis;
         buzzerState = !buzzerState;
@@ -102,7 +103,7 @@ void buzzerOutput(int state) {
       break;
       
     case 2:  // Touch 2 active
-      interval = 3;  // 3ms interval
+      interval = 20;  // 20ms interval
       if (currentMillis - previousMillis >= interval) {
         previousMillis = currentMillis;
         buzzerState = !buzzerState;

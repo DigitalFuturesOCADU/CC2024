@@ -5,9 +5,14 @@
  * using digital on/off at specified intervals.
  * 
  * Pin Configuration:
- * Touch 0 - Digital Pin 4  (20ms on/off)
- * Touch 1 - Digital Pin 5  (3ms on/off)
+ * Touch 0 - Digital Pin 4  
+ * Touch 1 - Digital Pin 5  
  * Buzzer  - Digital Pin 11
+ *
+ * Interaction
+ * Touch 0 - State 1 - BEEP
+ * Touch 1 - State 2 - BOOP
+ * None    - State 0 - :(
  */
 
 // Pin definitions
@@ -60,7 +65,7 @@ void buzzerOutput(int state) {
   
   switch(state) {
     case 1:  // Touch 0 active
-      interval = 20;  // 20ms interval
+      interval = 3;  // 3ms interval
       if (currentMillis - previousMillis >= interval) {
         previousMillis = currentMillis;
         buzzerState = !buzzerState;  // Toggle buzzer state
@@ -74,7 +79,7 @@ void buzzerOutput(int state) {
       break;
       
     case 2:  // Touch 1 active
-      interval = 3;  // 5ms interval
+      interval = 20;  // 20ms interval
       if (currentMillis - previousMillis >= interval) {
         previousMillis = currentMillis;
         buzzerState = !buzzerState;  // Toggle buzzer state
