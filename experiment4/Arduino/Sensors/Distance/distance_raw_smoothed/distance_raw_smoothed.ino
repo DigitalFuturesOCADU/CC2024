@@ -39,7 +39,7 @@ UltraSonicDistanceSensor distanceSensor(TRIGGER_PIN, ECHO_PIN);
 float distance = 0.0f;          // Current distance in cm
 float smoothedDistance = 0.0f;  // Filtered distance
 unsigned long lastDistanceReadTime = 0;
-unsigned int distanceReadInterval = 100;  // Time between reads in milliseconds (10Hz default)
+unsigned int distanceReadInterval = 30;  // Time between reads in milliseconds 
 
 // Rolling average variables for distance
 const int DISTANCE_AVERAGE_WINDOW = 5;

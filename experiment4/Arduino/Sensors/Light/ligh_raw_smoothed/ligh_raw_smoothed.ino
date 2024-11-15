@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Light Sensor Control System
+ * Light Sensor Control System with Startup Calibration
  * 
  * HARDWARE CONFIGURATION:
  * - Analog light sensor connected to pin A7
@@ -21,26 +21,30 @@
  * Sensor Values:
  * - lightValue          : Raw analog reading (0-1023)
  * - smoothedLightValue  : Filtered value from rolling average
+ * - startupLightValue   : Calibrated baseline at startup
+ * - brightnessState     : Comparison to startup (brighter/darker/same)
  * 
  * FUNCTIONALITY:
+ * - Performs initial calibration at startup
  * - Performs analog readings at specified intervals
  * - Implements rolling average for noise reduction
- * - Outputs both raw and smoothed values via Serial
+ * - Compares current readings to startup baseline
+ * - Outputs raw, smoothed, and comparative values via Serial
  * 
  * Serial Output Format:
- * "Light Raw: [value]\tLight Smoothed: [value]"
+ * "Light Raw: [value]\tLight Smoothed: [value]\tStartup Value: [value]\tCompared to Startup: [state]"
  * 
  *******************************************************************************/
- 
+
 
 int lightPin = A7;
 const int lightAverageWindow = 10; // Number of samples to average
 
-
-
 // Global variables
 int lightValue = 0;          // Raw value
 int smoothedLightValue = 0;  // Filtered value
+int startupLightValue = 0;   // Calibration value from startup
+String brightnessState = ""; // Stores comparison to startup
 unsigned long lastLightReadTime = 0;
 unsigned int lightReadInterval = 50;  // Time between reads in milliseconds
 
@@ -61,16 +65,23 @@ void initializeLightAverage() {
 
 // Function to update rolling average with new value
 void updateLightAverage(int newValue) {
-  // Subtract the oldest reading from the total
   lightTotalValue = lightTotalValue - lightReadings[lightReadIndex];
-  // Add the new reading to the array
   lightReadings[lightReadIndex] = newValue;
-  // Add the new reading to the total
   lightTotalValue = lightTotalValue + newValue;
-  // Advance to the next position in the array
   lightReadIndex = (lightReadIndex + 1) % lightAverageWindow;
-  // Calculate the average
   smoothedLightValue = lightTotalValue / lightAverageWindow;
+}
+
+// Function to compare current brightness to startup
+void updateBrightnessState() {
+  const int threshold = 10; // Tolerance for considering values "same"
+  if (abs(smoothedLightValue - startupLightValue) <= threshold) {
+    brightnessState = "same";
+  } else if (smoothedLightValue > startupLightValue) {
+    brightnessState = "brighter";
+  } else {
+    brightnessState = "darker";
+  }
 }
 
 // Function to read light sensor and update the global value
@@ -82,6 +93,9 @@ void readLightSensor() {
     
     // Update the rolling average
     updateLightAverage(lightValue);
+    
+    // Compare to startup value
+    updateBrightnessState();
     
     // Print the values
     printLightValue();
@@ -96,17 +110,35 @@ void printLightValue() {
   Serial.print("Light Raw: ");
   Serial.print(lightValue);
   Serial.print("\tLight Smoothed: ");
-  Serial.println(smoothedLightValue);
+  Serial.print(smoothedLightValue);
+  Serial.print("\tStartup Value: ");
+  Serial.print(startupLightValue);
+  Serial.print("\tCompared to Startup: ");
+  Serial.println(brightnessState);
+}
+
+void calibrateSensor() {
+  Serial.println("Calibrating sensor...");
+  // Take multiple readings and average them for startup value
+  long total = 0;
+  for (int i = 0; i < lightAverageWindow; i++) {
+    total += analogRead(lightPin);
+    delay(50); // Short delay between readings
+  }
+  startupLightValue = total / lightAverageWindow;
+  Serial.print("Calibration complete. Startup value: ");
+  Serial.println(startupLightValue);
 }
 
 void setup() {
   Serial.begin(9600);
   Serial.println("Light sensor");
   
-
-  
   // Initialize the rolling average
   initializeLightAverage();
+  
+  // Perform startup calibration
+  calibrateSensor();
 }
 
 void loop() {

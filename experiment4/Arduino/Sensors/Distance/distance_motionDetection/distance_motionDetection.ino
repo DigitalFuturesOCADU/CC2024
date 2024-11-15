@@ -1,6 +1,21 @@
 /*******************************************************************************
  * Distance Sensor Motion Detection System
- * Tracks object motion and total distance moved over time
+ * 
+ * Real-time distance and motion tracking system using rolling average smoothing.
+ * Calculates instantaneous motion and accumulates total movement distance.
+ * 
+ * Key Control Variables:
+ * readInterval    = 30ms   - Main processing/output interval
+ * AVERAGE_WINDOW  = 5      - Number of samples in rolling average
+ * MOTION_THRESHOLD = 0.3cm - Minimum change to register as movement
+ * 
+ * Output Format:
+ * Raw Distance (cm) | Smoothed Distance (cm) | Current Motion (cm) | 
+ * Motion State (TOWARD/AWAY/STILL) | Total Motion (cm)
+ * 
+ * Hardware Setup:
+ * TRIGGER_PIN = 2
+ * ECHO_PIN = 3
  *******************************************************************************/
 
 #include <HCSR04.h>
@@ -10,98 +25,79 @@
 
 UltraSonicDistanceSensor distanceSensor(TRIGGER_PIN, ECHO_PIN);
 
-// Distance sensing variables
+// Variables
 float distance = 0.0f;
 float smoothedDistance = 0.0f;
-unsigned long lastDistanceReadTime = 0;
-unsigned int distanceReadInterval = 100;
-
-// Rolling average variables
-const int DISTANCE_AVERAGE_WINDOW = 5;
-float distanceReadings[DISTANCE_AVERAGE_WINDOW];
-int distanceReadIndex = 0;
-float distanceTotalValue = 0;
-
-// Motion detection variables
-const float MOTION_THRESHOLD_CM = 0.5;
-const float STILL_THRESHOLD_CM = 0.2;
-unsigned long motionDetectInterval = 500;
-unsigned long lastMotionCheckTime = 0;
-float lastSmoothedDistance = 0;
+float lastSmoothedDistance = 0.0f;
 float totalMotion = 0.0f;
+unsigned long lastReadTime = 0;
+const unsigned int readInterval = 30;
+const float MOTION_THRESHOLD = 0.3;
 
+// Rolling average
+const int AVERAGE_WINDOW = 5;
+float readings[AVERAGE_WINDOW];
+int readIndex = 0;
+float totalValue = 0;
 
 void setup() {
   Serial.begin(9600);
-  Serial.println("Distance Motion Detector Active!");
-  initializeDistanceAverage();
+  for(int i = 0; i < AVERAGE_WINDOW; i++) readings[i] = 0;
+  Serial.println("Distance Motion Detection Started");
+  Serial.println("--------------------------------");
 }
 
-void loop() {
-  readDistance();
-}
-
-
-void initializeDistanceAverage() {
-  for (int i = 0; i < DISTANCE_AVERAGE_WINDOW; i++) {
-    distanceReadings[i] = 0;
-  }
-  distanceTotalValue = 0;
-  distanceReadIndex = 0;
-}
-
-void updateDistanceAverage(float newValue) {
-  if (newValue > 0) {
-    distanceTotalValue = distanceTotalValue - distanceReadings[distanceReadIndex];
-    distanceReadings[distanceReadIndex] = newValue;
-    distanceTotalValue = distanceTotalValue + newValue;
-    distanceReadIndex = (distanceReadIndex + 1) % DISTANCE_AVERAGE_WINDOW;
-    smoothedDistance = distanceTotalValue / DISTANCE_AVERAGE_WINDOW;
-  }
-}
-
-void printMotionState() {
+void processDistance() {
   unsigned long currentTime = millis();
-  if (currentTime - lastMotionCheckTime >= motionDetectInterval) {
-    float change = smoothedDistance - lastSmoothedDistance;
-    
-    if (abs(change) > STILL_THRESHOLD_CM) {
-      totalMotion += abs(change);
-    }
-    
-    Serial.print("Distance Raw: ");
-    Serial.print(distance);
-    Serial.print(" cm\tSmoothed: ");
-    Serial.print(smoothedDistance);
-    Serial.print(" cm\tMotion: ");
-    
-    if (abs(change) < STILL_THRESHOLD_CM) {
-      Serial.print("STILL");
-    } else if (change < -MOTION_THRESHOLD_CM) {
-      Serial.print("TOWARD");
-    } else if (change > MOTION_THRESHOLD_CM) {
-      Serial.print("AWAY");
-    }
-    
-    Serial.print("\tTotal Motion: ");
-    Serial.println(totalMotion);
-    
-    lastSmoothedDistance = smoothedDistance;
-    lastMotionCheckTime = currentTime;
-  }
-}
-
-void readDistance() {
-  unsigned long currentTime = millis();
-  if (currentTime - lastDistanceReadTime >= distanceReadInterval) {
+  if (currentTime - lastReadTime >= readInterval) {
     float newDistance = distanceSensor.measureDistanceCm();
     
     if (newDistance > 0) {
       distance = newDistance;
-      updateDistanceAverage(distance);
+      
+      // Update rolling average
+      totalValue = totalValue - readings[readIndex];
+      readings[readIndex] = distance;
+      totalValue = totalValue + distance;
+      readIndex = (readIndex + 1) % AVERAGE_WINDOW;
+      lastSmoothedDistance = smoothedDistance;
+      smoothedDistance = totalValue / AVERAGE_WINDOW;
+      
+      // Calculate motion
+      float change = smoothedDistance - lastSmoothedDistance;
+      totalMotion += abs(change);
+      
+      // Print verbose status
+      Serial.print("Raw Distance: ");
+      Serial.print(distance);
+      Serial.print(" cm | ");
+      
+      Serial.print("Smoothed: ");
+      Serial.print(smoothedDistance);
+      Serial.print(" cm | ");
+      
+      Serial.print("Current Motion: ");
+      Serial.print(abs(change));
+      Serial.print(" cm | ");
+      
+      Serial.print("State: ");
+      if(abs(change) < MOTION_THRESHOLD) {
+        Serial.print("STILL");
+      } else if(change > 0) {
+        Serial.print("AWAY ");
+      } else {
+        Serial.print("TOWARD");
+      }
+      Serial.print(" | ");
+      
+      Serial.print("Total Motion: ");
+      Serial.print(totalMotion);
+      Serial.println(" cm");
     }
-    
-    printMotionState();
-    lastDistanceReadTime = currentTime;
+    lastReadTime = currentTime;
   }
+}
+
+void loop() {
+  processDistance();
 }
