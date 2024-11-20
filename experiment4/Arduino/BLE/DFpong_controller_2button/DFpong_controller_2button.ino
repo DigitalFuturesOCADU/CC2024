@@ -37,7 +37,7 @@
 
 
 //Name your controller!
-const char* deviceName = "PongController2";
+const char* deviceName = "YOUR CONTROLLER NAME";
 
 // Pin definitions buzzer/LED
 const int BUZZER_PIN = 11;       // Pin for haptic feedback buzzer
